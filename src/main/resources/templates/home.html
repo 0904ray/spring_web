@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Schedule</title>
+    <script>
+        function confirmDelete(event) {
+            if (!confirm("Are you sure you want to delete this message?")) {
+                event.preventDefault();
+            }
+        }
+
+        function openModal(id, message, time) {
+            document.getElementById('id').value = id || '';
+            document.getElementById('message').value = message || '';
+            document.getElementById('time').value = time || '';
+            document.getElementById("myModal").style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById("myModal").style.display = "none";
+        }
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .container {
+            width: 90%;
+            margin: auto;
+            overflow: hidden;
+        }
+
+        /* Floating Button */
+        .floating-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background-color: #1f2eff;
+            color: white;
+            font-size: 24px;
+            text-align: center;
+            line-height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .floating-button:hover {
+            background-color: #181bca;
+        }
+
+        /* Buttons */
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            text-align: center;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            margin: 5px 0;
+        }
+
+        .button.modify {
+            background: #888888;
+            color: #fff;
+        }
+
+        .button.modify:hover {
+            background: #666666;
+        }
+
+        .button.delete {
+            background: #dc3545;
+            color: #fff;
+        }
+
+        .button.delete:hover {
+            background: #c82333;
+        }
+
+        .button.apply {
+            background: #1928ff;
+            color: #fff;
+        }
+
+        .button.apply:hover {
+            background: #152ebb;
+        }
+
+        .button.cancel {
+            background: #f5f5f5;
+            color: black;
+        }
+
+        .button.cancel:hover {
+            background: #e2e2e2;
+        }
+
+        /* Schedule Items */
+        .schedule-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .schedule-item:nth-child(even) {
+            background: #f2f2f2;
+        }
+
+        .schedule-item:nth-child(odd) {
+            background: #ffffff;
+        }
+
+        .schedule-item:hover {
+            background: #ddd;
+        }
+
+        .schedule-time {
+            font-size: 16px;
+            color: #666;
+        }
+
+        .schedule-message {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, .5);
+            border-radius: 5px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .input-field {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .textarea-field {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .inline-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .inline-group > div {
+            flex: 1;
+        }
+
+        .inline-group .date {
+            flex: 2;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Schedules</h2>
+    <div class="schedule-list">
+        <div th:each="message : ${messages}" class="schedule-item">
+            <div>
+                <div class="schedule-time" th:text="${message.time}"></div>
+                <div class="schedule-message" th:text="${message.message}"></div>
+            </div>
+            <div class="action-buttons">
+                <button class="button modify" th:attr="data-id=${message.id}, data-message=${message.message}, data-time=${message.time}" onclick="openModal(this.getAttribute('data-id'), this.getAttribute('data-message'), this.getAttribute('data-time'))">
+                    Modify
+                </button>
+                <form th:action="@{/delete_sch}" method="post" onsubmit="confirmDelete(event)">
+                    <input type="hidden" name="id" th:value="${message.id}">
+                    <button type="submit" class="button delete">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div id="openModalBtn" class="floating-button" onclick="openModal()">+</div>
+</div>
+
+<!-- Modal -->
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <form th:action="@{/modify_sch}" method="post" id="modalForm">
+            <input type="hidden" id="id" name="id">
+            <label for="time">Time:</label>
+            <input type="text" id="time" name="time" class="input-field" required>
+            <label for="message">Message:</label>
+            <textarea id="message" name="message" class="input-field textarea-field" required></textarea>
+            <button type="submit" class="button apply">Apply</button>
+            <button type="button" class="button cancel" id="cancelBtn" onclick="closeModal()">Cancel</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

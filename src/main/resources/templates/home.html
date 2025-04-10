@@ -10,10 +10,20 @@
             }
         }
 
-        function openModal(id, message, time) {
+        function openModal(id, message, date, hour, notified) {
             document.getElementById('id').value = id || '';
             document.getElementById('message').value = message || '';
-            document.getElementById('time').value = time || '';
+            document.getElementById('date').value = date || '';
+            document.getElementById('hour').value = hour || '';
+            document.getElementById('notified').checked = notified === 'true';
+
+            const form = document.getElementById("modalForm");
+            if (id) {
+                form.action = "/modify_sch";
+            } else {
+                form.action = "/new_sch";
+            }
+
             document.getElementById("myModal").style.display = "block";
         }
 
@@ -220,11 +230,21 @@
     <div class="schedule-list">
         <div th:each="message : ${messages}" class="schedule-item">
             <div>
-                <div class="schedule-time" th:text="${message.time}"></div>
+                <div class="schedule-date" th:text="${message.date}"></div>
+                <div class="schedule-hour" th:text="${message.hour}"></div>
                 <div class="schedule-message" th:text="${message.message}"></div>
+                <div class="schedule-notified" th:text="${message.notified} ? 'Notified' : 'Pending'"></div>
             </div>
             <div class="action-buttons">
-                <button class="button modify" th:attr="data-id=${message.id}, data-message=${message.message}, data-time=${message.time}" onclick="openModal(this.getAttribute('data-id'), this.getAttribute('data-message'), this.getAttribute('data-time'))">
+                <button class="button modify"
+                        th:attr="data-id=${message.id}, data-message=${message.message},
+                                  data-date=${message.date}, data-hour=${message.hour},
+                                  data-notified=${message.notified}"
+                        onclick="openModal(this.getAttribute('data-id'),
+                                           this.getAttribute('data-message'),
+                                           this.getAttribute('data-date'),
+                                           this.getAttribute('data-hour'),
+                                           this.getAttribute('data-notified'))">
                     Modify
                 </button>
                 <form th:action="@{/delete_sch}" method="post" onsubmit="confirmDelete(event)">
@@ -240,14 +260,19 @@
 <!-- Modal -->
 <div id="myModal" class="modal">
     <div class="modal-content">
-        <form th:action="@{/modify_sch}" method="post" id="modalForm">
+        <form method="post" id="modalForm">
             <input type="hidden" id="id" name="id">
-            <label for="time">Time:</label>
-            <input type="text" id="time" name="time" class="input-field" required>
+            <label for="date">Date:</label>
+            <input type="date" id="date" name="date" class="input-field" required>
+            <label for="hour">Hour:</label>
+            <input type="number" id="hour" name="hour" class="input-field" min="0" max="23" required>
             <label for="message">Message:</label>
             <textarea id="message" name="message" class="input-field textarea-field" required></textarea>
+            <label>
+                <input type="hidden" id="notified" name="notified" value="false">
+            </label>
             <button type="submit" class="button apply">Apply</button>
-            <button type="button" class="button cancel" id="cancelBtn" onclick="closeModal()">Cancel</button>
+            <button type="button" class="button cancel" onclick="closeModal()">Cancel</button>
         </form>
     </div>
 </div>

@@ -21,7 +21,6 @@ public class JSONRepository implements MessageRepository{
     public List<Message> getAllMessage() {
         try{
             File file = new File(FILE_PATH);
-            System.out.println(file.exists());
             if (!file.exists()) {
                 return new ArrayList<>();
             }

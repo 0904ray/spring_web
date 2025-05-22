@@ -11,7 +11,11 @@
         }
 
         function openModal(id, message, date, hour, notified) {
-            document.getElementById('id').value = id || '';
+            if (id) {
+                document.getElementById('id').value = id;
+            } else {
+                document.getElementById('id').value = null;
+            }
             document.getElementById('message').value = message || '';
             document.getElementById('date').value = date || '';
             document.getElementById('hour').value = hour || '';
@@ -233,7 +237,6 @@
                 <div class="schedule-date" th:text="${message.date}"></div>
                 <div class="schedule-hour" th:text="${message.hour}"></div>
                 <div class="schedule-message" th:text="${message.message}"></div>
-                <div class="schedule-notified" th:text="${message.notified} ? 'Notified' : 'Pending'"></div>
             </div>
             <div class="action-buttons">
                 <button class="button modify"

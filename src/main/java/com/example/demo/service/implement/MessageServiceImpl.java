@@ -20,12 +20,34 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public List<MessageDto> getAllMessages(){
-        List<Message> messages = messageRepository.getAllMessage();
+    public List<MessageDto> getUnnotifiedMessages(){
+        List<Message> messages = messageRepository.getUnnotifiedMessage();
+        messages.sort(Comparator.comparing(Message::getTime));
         List<MessageDto> messageDtos = new ArrayList<>();
         for(Message message : messages){
             messageDtos.add(MessageMapper.mapToDto(message));
         }
         return messageDtos;
     }
+
+    @Override
+    public void newMessage(MessageDto messageDto){
+        messageDto.setDate(messageDto.getDate().replace("-",""));
+        messageDto.setId(messageRepository.getMessageCount() + 1);
+        Message m = MessageMapper.mapToMessage(messageDto);
+        messageRepository.newMessage(m);
+    }
+
+    @Override
+    public void modifyMessage(MessageDto messageDto) {
+        messageDto.setDate(messageDto.getDate().replace("-", ""));
+        Message message = MessageMapper.mapToMessage(messageDto);
+        messageRepository.modifyMessage(message);
+    }
+
+    @Override
+    public void deletMessage(int id) {
+        messageRepository.deleteMessage(id);
+    }
+
 }

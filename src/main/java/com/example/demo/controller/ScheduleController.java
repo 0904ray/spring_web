@@ -22,31 +22,37 @@ public class ScheduleController {
 
     @GetMapping
     public String home(Model model){
-        List<MessageDto> messages = messageService.getAllMessages();
+        List<MessageDto> messages = messageService.getUnnotifiedMessages();
         model.addAttribute("messages", messages);
         return "home";
     }
 
     @PostMapping("/new_sch")
     public String newSchedule(Model model, @ModelAttribute MessageDto messageDto){
-        List<MessageDto> messages = messageService.getAllMessages();
-        System.out.println(messageDto);
+        if(messageDto.getHour().length()==1){
+            messageDto.setHour(String.format("%02d", Integer.parseInt(messageDto.getHour())));
+        }
+        messageService.newMessage(messageDto);
+        List<MessageDto> messages = messageService.getUnnotifiedMessages();
         model.addAttribute("messages", messages);
         return "home";
     }
 
     @PostMapping("/modify_sch")
     public String modifySchedule(Model model, @ModelAttribute MessageDto messageDto){
-        List<MessageDto> messages = messageService.getAllMessages();
-        System.out.println(messageDto);
+        if(messageDto.getHour().length()==1){
+            messageDto.setHour(String.format("%02d", Integer.parseInt(messageDto.getHour())));
+        }
+        messageService.modifyMessage(messageDto);
+        List<MessageDto> messages = messageService.getUnnotifiedMessages();
         model.addAttribute("messages", messages);
         return "home";
     }
 
     @PostMapping("/delete_sch")
-    public String deleteSchedule(Model model, @RequestParam String id){
-        List<MessageDto> messages = messageService.getAllMessages();
-        System.out.println(id);
+    public String deleteSchedule(Model model, @RequestParam int id){
+        messageService.deletMessage(id);
+        List<MessageDto> messages = messageService.getUnnotifiedMessages();
         model.addAttribute("messages", messages);
         return "home";
     }

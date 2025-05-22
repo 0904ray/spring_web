@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Message {
-    private String id;
+    private int id;
     private String message;
     private String time;
     private boolean notified;

@@ -1,14 +1,1 @@
-[
-  {
-    "id": 1,
-    "message": "Hello, World!",
-    "time": "2024021200",
-    "notified": true
-  },
-  {
-    "id": 2,
-    "message": "Spring Boot is awesome!",
-    "time": "2024021315",
-    "notified": true
-  }
-]
+[]
